@@ -1,0 +1,48 @@
+name = "acme-cert-worker"
+main = "src/index.ts"
+compatibility_date = "2026-01-03"
+
+compatibility_flags = ["nodejs_compat"]
+
+# KV: 缓存证书/私钥、以及 ACME account
+kv_namespaces = [
+  { binding = "CERTS_KV", id = "b7daa14e83144e43a8e81ccf76cad405" }
+]
+
+# 如需绑定路由：
+# routes = [
+#   { pattern = "cert-api.example.com/*", zone_name = "example.com" }
+# ]
+
+[vars]
+# 允许申请/查询的域名列表（逗号分隔）。支持 "example.com" 和 "*.example.com" 两种写法。
+ALLOWED_DOMAINS = "010021.xyz,*.010021.xyz"
+
+# Bearer Token（用于保护 /cert 接口）
+AUTH_TOKEN = "scPqZ5w1mHaQ9ZuFtw_VxFb3GlnlQDG7eumpskK0eaZhDUhpKQ2vCYa1mJ1Mqe6c"
+
+# Cloudflare API Token（用于 DNS-01 创建/删除 TXT 记录）
+CF_API_TOKEN = "kcHAJ-62iNWDGrSfOSbcl1oApLqfHmGi3leUTpT0"
+
+# 域名到 zoneId 的映射（JSON 数组）。按 suffix 匹配。
+# 例：[{"suffix":"example.com","zoneId":"xxxxxxxx"}]
+CF_ZONE_MAP_JSON = "[  { \"suffix\": \"010021.xyz\", \"zoneId\": \"f78fbab10a820fa6851bc518c7e125ae\" } ]"
+
+# 续期阈值（天）
+RENEW_BEFORE_DAYS = "30"
+
+# DNS 传播等待（秒）
+DNS_PROPAGATION_SECONDS = "20"
+
+# ACME 账户联系邮箱（GTS 要求 new-account 至少一个 contact）
+ACME_CONTACT_EMAIL = "go28cn@gamil.com"
+
+# ACME Providers（JSON 数组）。可配置多个，按顺序尝试。
+# provider: LE/ZeroSSL/GTS（仅用于日志）
+# directoryUrl: ACME directory URL
+# eab: ZeroSSL 常用，需要 {kid,hmacKeyBase64url}
+CA_PROVIDERS_JSON = "[   {     \"provider\": \"LE\",     \"directoryUrl\": \"https://acme-v02.api.letsencrypt.org/directory\"   },   {     \"provider\": \"ZeroSSL\",     \"directoryUrl\": \"https://acme.zerossl.com/v2/DV90\",     \"eab\": {       \"kid\": \"9RhfYuX3ncnIb_ywK43RXw\",       \"hmacKeyBase64url\": \"P3yABCiX_w4ah9IqEKaqzHIxMv8fRZXHnx6JiDt-xGKu0r4aNbOOfUdZ9j3RV1ycfaxaRvHAxffyw9vrWy4lUQ\"  }  } , {     \"provider\": \"GTS\",     \"directoryUrl\": \"https://dv.acme-v02.api.pki.goog/directory\",     \"eab\": {       \"kid\": \"219e0380d0ad0d6516937d321c4c523b\",       \"hmacKeyBase64url\": \"gqz44SkbZuKjeNOIsn4FJNrkjpPQ_J6aOi0vJ0jZWuOrcRoXWr-SsRwWSeMuw_eGNRQSAHAYt_fLkV5ibTJFvw\"     }   } ]"
+
+# 重要：需要配置 CF_ZONE_MAP_JSON 才能创建 DNS TXT。
+# 示例：
+# CF_ZONE_MAP_JSON = "[{\"suffix\":\"example.com\",\"zoneId\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"}]"
